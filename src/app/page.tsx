@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <ChakraProvider theme={theme}>
       <Navigation />
-      <div className="body h-screen p-4 md:p-48">
+      <div className="body h-screen p-4 md:p-8 lg:p-48 lg:px-[25%]">
         <Guess />
       </div>
     </ChakraProvider>
