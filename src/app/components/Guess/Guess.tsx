@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Button,
@@ -10,17 +11,21 @@ import {
 import React, { useEffect, useState } from "react";
 import supabase from "@/app/supabase";
 import { CheckIcon, CloseIcon, QuestionOutlineIcon } from "@chakra-ui/icons";
+import Confetti from "react-confetti";
+import useWindowSize from "@rooks/use-window-size";
 
 export const Guess = () => {
   const [inputValue, setInputValue] = useState("");
+  const [data, setData] = useState<Entry>();
   const [guessesLeft, setGuessesLeft] = useState(2);
-  const [failed, setFailed] = useState(false);
-  const [won, setWon] = useState(false);
   const [answer, setAnswer] = useState("");
 
-  const [data, setData] = useState<Entry>();
+  const [failed, setFailed] = useState(false);
 
-  const totalEntries = 14;
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [won, setWon] = useState(false);
+
+  const totalEntries = 15;
 
   const randomOffset = Math.floor(Math.random() * totalEntries) + 1;
 
@@ -56,6 +61,10 @@ export const Guess = () => {
       if (guess === answer) {
         setWon(true);
         setGuessesLeft(guessesLeft - 1);
+        setShowConfetti(true);
+        setTimeout(() => {
+          setShowConfetti(false);
+        }, 3000);
       } else {
         if (guessesLeft === 1) {
           setGuessesLeft(guessesLeft - 1);
@@ -74,6 +83,12 @@ export const Guess = () => {
 
   return (
     <div className="flex flex-col gap-8">
+      <Confetti
+        width={innerWidth!}
+        height={innerHeight!}
+        numberOfPieces={showConfetti ? 250 : 0}
+        className="w-full"
+      />
       <div className="text">
         {data ? <Heading>{data.text}</Heading> : <Heading>Loading...</Heading>}
       </div>
