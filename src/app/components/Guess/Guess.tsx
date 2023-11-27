@@ -1,18 +1,25 @@
 "use client";
 import {
-  Box,
   Button,
   Collapse,
   Divider,
   Heading,
   Icon,
+  IconButton,
   Input,
+  Link,
+  Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import supabase from "@/app/supabase";
-import { CheckIcon, CloseIcon, QuestionOutlineIcon } from "@chakra-ui/icons";
+import {
+  CheckIcon,
+  CloseIcon,
+  InfoOutlineIcon,
+  QuestionIcon,
+  QuestionOutlineIcon,
+} from "@chakra-ui/icons";
 import Confetti from "react-confetti";
-import useWindowSize from "@rooks/use-window-size";
 
 export const Guess = () => {
   const [inputValue, setInputValue] = useState("");
@@ -20,12 +27,12 @@ export const Guess = () => {
   const [guessesLeft, setGuessesLeft] = useState(2);
   const [answer, setAnswer] = useState("");
 
+  const [won, setWon] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const [showConfetti, setShowConfetti] = useState(false);
-  const [won, setWon] = useState(false);
 
-  const totalEntries = 15;
+  const totalEntries = 60;
 
   const randomOffset = Math.floor(Math.random() * totalEntries) + 1;
 
@@ -46,6 +53,7 @@ export const Guess = () => {
     id: number;
     text: string;
     lang: string;
+    english_translation: string;
   }
 
   const handleKeyDown = (event: { key: string }) => {
@@ -100,10 +108,12 @@ export const Guess = () => {
         </div>
       </Collapse>
       <Collapse in={failed} animateOpacity>
-        <div className="p-6 bg-red-600 text-white ">
-          <Icon w={7} h={7} as={CloseIcon} />
-          <span className="pl-3">Out of tries. This text is written in </span>
-          <span className="font-semibold">{data?.lang}</span>
+        <div className="p-5 bg-red-600 flex justify-between text-white ">
+          <div className="text">
+            <Icon w={7} h={7} as={CloseIcon} />
+            <span className="pl-3">Out of tries. This text is written in </span>
+            <span className="font-semibold">{data?.lang}</span>
+          </div>
         </div>
       </Collapse>
 
@@ -112,11 +122,12 @@ export const Guess = () => {
         <div className="flex p-1 px-3">
           <div className={"flex gap-1"}>
             <Icon className="self-center" as={QuestionOutlineIcon} />
-            <p>{guessesLeft} guesses left</p>
+            <Text>{guessesLeft} guesses left</Text>
           </div>
         </div>
         <div className="flex gap-4">
           <Input
+            disabled={won || failed}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="The language of the text above"
