@@ -111,7 +111,7 @@ export const Guess = () => {
   return (
     <section
       about="language guessing game"
-      className="flex flex-col gap-8 w-[32rem] p-4 min-h-full"
+      className="flex flex-col gap-8 p-4 max-w-md"
     >
       <Confetti
         width={innerWidth!}
@@ -129,7 +129,7 @@ export const Guess = () => {
           </div>
           <div className="right flex flex-col gap-2">
             <div className="top">
-              <span>Correct! This text is written in </span>
+              <span>Correct! This text was written in </span>
               <span className="font-semibold">{data?.lang}</span>
             </div>
             <div className="bottom flex gap-4">
@@ -162,7 +162,7 @@ export const Guess = () => {
           </div>
           <div className="right flex flex-col gap-2">
             <div className="top">
-              <span>Out of tries. This text is written in </span>
+              <span>Out of tries. This text was written in </span>
               <span className="font-semibold">{data?.lang}</span>
             </div>
             <div className="bottom flex gap-4">

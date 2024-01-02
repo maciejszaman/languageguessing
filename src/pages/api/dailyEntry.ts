@@ -1,4 +1,3 @@
-// pages/api/daily-entry.js
 import supabase from "../../app/supabase";
 interface Entry {
   id: number;
@@ -21,12 +20,10 @@ export default async function handler(req, res) {
         .from("random_texts")
         .select("*")
         .eq("id", randomOffset);
-
-      if (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal Server Error" });
+      if (data) {
+        res.status(200).json({ data });
       } else {
-        res.json(data);
+        res.status(500).json({ error });
       }
     } catch (error) {
       console.error(error);
