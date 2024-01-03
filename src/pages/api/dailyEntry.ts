@@ -1,35 +1,34 @@
 import supabase from "../../app/supabase";
-interface Entry {
-  id: number;
-  text: string;
-  lang: string;
-  english_translation: string;
-}
+import fs from "fs";
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    const currentDate = new Date();
-    currentDate.setUTCHours(0, 0, 0, 0);
-
-    try {
-      const totalEntries = 60;
-
-      const randomOffset = Math.floor(Math.random() * totalEntries) + 1;
-
-      const { data, error } = await supabase
-        .from("random_texts")
-        .select("*")
-        .eq("id", randomOffset);
-      if (data) {
-        res.status(200).json({ data });
-      } else {
-        res.status(500).json({ error });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method Not Allowed" });
   } else {
-    res.status(405).json({ error: "Method Not Allowed" });
+    const fullDate = new Date();
+    const now = fullDate.toISOString().split("T")[0];
+
+    const totalEntries = 60;
+    const random = Math.floor(Math.random() * totalEntries) + 1;
+
+    const { data, error } = await supabase
+      .from("log_db")
+      .select("*")
+      .eq("date", now);
+
+    if (error) {
+      return res.status(500).json({ message: { error } });
+    } else {
+      if (data.length === 0) {
+        try {
+          const { error } = await supabase
+            .from("log_db")
+            .insert({ id: random, date: now });
+          return res.status(500).json({ message: "INSERTED" });
+        } catch (err) {
+          return res.status(500).json({ message: err });
+        }
+      }
+    }
   }
 }
