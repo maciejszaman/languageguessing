@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from "next";
 import supabase from "../../app/supabase";
 
 interface LogEntry {
@@ -17,7 +18,10 @@ const searchForID = async (id: number) => {
   return data;
 };
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   //check for method
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method Not Allowed" });
