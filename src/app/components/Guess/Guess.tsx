@@ -10,7 +10,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import supabase from "@/app/supabase";
 import {
   CheckIcon,
   CloseIcon,
@@ -20,6 +19,7 @@ import {
 } from "@chakra-ui/icons";
 import Confetti from "react-confetti";
 import { TranslationModal } from "./TranslationModal/TranslationModal";
+import axios from "axios";
 
 export const Guess = () => {
   const [inputValue, setInputValue] = useState("");
@@ -27,27 +27,21 @@ export const Guess = () => {
   const [guessesLeft, setGuessesLeft] = useState(2);
   const [answer, setAnswer] = useState("");
 
-  const [won, setWon] = useState(false);
+  const [won, setWon] = useState(true);
   const [failed, setFailed] = useState(false);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [shake, setShake] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const totalEntries = 60;
-
-  const randomOffset = Math.floor(Math.random() * totalEntries) + 1;
-
   const fetchEntry = async () => {
-    const { data, error } = await supabase
-      .from("random_texts")
-      .select("*")
-      .eq("id", randomOffset);
+    const res = await axios.get("http://localhost:3000/api/dailyEntry");
+    const data = res.data.message;
     if (data) {
       setData(data[0]);
       setAnswer(data[0].lang);
     } else {
-      console.log(error);
+      console.log(Error);
     }
   };
 
@@ -134,15 +128,6 @@ export const Guess = () => {
             </div>
             <div className="bottom flex gap-4">
               <Button
-                leftIcon={<RepeatIcon />}
-                colorScheme="white"
-                size="sm"
-                variant="outline"
-                onClick={() => handleReset()}
-              >
-                REFRESH
-              </Button>
-              <Button
                 rightIcon={<CopyIcon />}
                 colorScheme="white"
                 size="sm"
@@ -166,15 +151,6 @@ export const Guess = () => {
               <span className="font-semibold">{data?.lang}</span>
             </div>
             <div className="bottom flex gap-4">
-              <Button
-                leftIcon={<RepeatIcon />}
-                colorScheme="white"
-                size="sm"
-                variant="outline"
-                onClick={() => handleReset()}
-              >
-                REFRESH
-              </Button>
               <Button
                 rightIcon={<CopyIcon />}
                 colorScheme="white"

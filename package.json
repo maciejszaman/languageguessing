@@ -17,6 +17,7 @@
     "@mui/material": "^5.14.20",
     "@rooks/use-window-size": "^4.11.2",
     "@supabase/supabase-js": "^2.38.5",
+    "axios": "^1.6.4",
     "evergreen-ui": "^7.1.9",
     "framer-motion": "^10.16.5",
     "moment": "^2.30.1",
