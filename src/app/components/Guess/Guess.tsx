@@ -36,6 +36,11 @@ export const Guess = () => {
   const fullDate = new Date();
   const todaysDate = fullDate.toISOString().split("T")[0];
 
+  const streak = localStorage.getItem("streak");
+  if (streak === null) {
+    localStorage.setItem("streak", "0");
+  }
+
   const fetchEntry = async () => {
     const res = await axios.get("http://localhost:3000/api/dailyEntry");
     const data = res.data.message;
@@ -76,6 +81,7 @@ export const Guess = () => {
       if (guess === answer) {
         setWon(true);
         saveScore("won");
+        localStorage.setItem("streak", (Number(streak) + 1).toString());
         setGuessesLeft(guessesLeft - 1);
         setShowConfetti(true);
         setTimeout(() => {
@@ -86,6 +92,7 @@ export const Guess = () => {
           setGuessesLeft(guessesLeft - 1);
           setFailed(true);
           saveScore("failed");
+          localStorage.setItem("streak", "0");
           setShake(true);
           setTimeout(() => {
             setShake(false);

@@ -1,37 +1,76 @@
-import { CalendarIcon, StarIcon } from "@chakra-ui/icons";
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Button, IconButton, Text } from "@chakra-ui/react";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
+import GTranslateIcon from "@mui/icons-material/GTranslate";
+import HomeIcon from "@mui/icons-material/Home";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 import React from "react";
-
-interface LocalStorage {
-  date: string;
-  result: "won" | "lost";
-}
 
 export const Navigation = () => {
   const fullDate = new Date();
   const today = fullDate.toISOString().split("T")[0];
+  let isCompleteToday = false;
+  if (localStorage.getItem(today) === "won") {
+    isCompleteToday = true;
+  } else {
+    isCompleteToday = false;
+  }
 
-  const Streak = 0;
+  const Streak = localStorage.getItem("streak");
   return (
-    <Flex direction="row" justifyContent="left" align="center">
-      <Box>
-        <Button disabled variant="ghost">
+    <div className="flex justify-between">
+      <div className="group hidden md:flex">
+        <Button color="gray" disabled variant="ghost">
           Home
         </Button>
         <Button variant="ghost">Language guessing</Button>
-        <Button disabled variant="ghost">
-          Flag guessing
-        </Button>
-      </Box>
-      <Box>
-        <Button color="gray" variant="outlined" leftIcon={<CalendarIcon />}>
+      </div>
+      <div className="group md:hidden">
+        <IconButton
+          aria-label="Home"
+          icon={<HomeIcon />}
+          color="gray"
+          disabled
+          variant="ghost"
+        />
+        <IconButton
+          aria-label="Language guessing"
+          icon={<GTranslateIcon />}
+          variant="ghost"
+        />
+      </div>
+      <div className="group hidden md:block">
+        <Button
+          color="gray"
+          variant="outlined"
+          leftIcon={<CalendarMonthIcon />}
+        >
           <Text>{today}</Text>
         </Button>
-        <Button color="gray" variant="outlined" rightIcon={<StarIcon />}>
+        <Button
+          color={isCompleteToday ? "orange" : "gray"}
+          variant="outlined"
+          rightIcon={<WhatshotIcon />}
+        >
           <Text>Streak: {Streak}</Text>
         </Button>
-      </Box>
-    </Flex>
+      </div>
+      <div className="group md:hidden">
+        <Button
+          color="gray"
+          variant="outlined"
+          leftIcon={<CalendarMonthIcon />}
+        >
+          <Text>{today}</Text>
+        </Button>
+        <Button
+          color={isCompleteToday ? "orange" : "gray"}
+          variant="outlined"
+          rightIcon={<WhatshotIcon />}
+        >
+          <Text>{Streak}</Text>
+        </Button>
+      </div>
+    </div>
   );
 };
