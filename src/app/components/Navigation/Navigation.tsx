@@ -1,15 +1,12 @@
 import { CalendarIcon, StarIcon } from "@chakra-ui/icons";
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  Spacer,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 
 import React from "react";
+
+interface LocalStorage {
+  date: string;
+  result: "won" | "lost";
+}
 
 export const Navigation = () => {
   const fullDate = new Date();

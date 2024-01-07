@@ -14,7 +14,6 @@ import {
   CheckIcon,
   CloseIcon,
   QuestionOutlineIcon,
-  RepeatIcon,
   CopyIcon,
 } from "@chakra-ui/icons";
 import Confetti from "react-confetti";
@@ -27,12 +26,15 @@ export const Guess = () => {
   const [guessesLeft, setGuessesLeft] = useState(2);
   const [answer, setAnswer] = useState("");
 
-  const [won, setWon] = useState(true);
+  const [won, setWon] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [shake, setShake] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const fullDate = new Date();
+  const todaysDate = fullDate.toISOString().split("T")[0];
 
   const fetchEntry = async () => {
     const res = await axios.get("http://localhost:3000/api/dailyEntry");
@@ -58,12 +60,13 @@ export const Guess = () => {
     }
   };
 
-  const handleReset = () => {
-    setWon(false);
-    setFailed(false);
-    setInputValue("");
-    setGuessesLeft(2);
-    fetchEntry();
+  const saveScore = (result: string) => {
+    try {
+      localStorage.setItem(todaysDate, result);
+      console.log(todaysDate + result);
+    } catch (err) {
+      console.error("Error saving the score: ", err);
+    }
   };
 
   const submitGuess = (guess: string) => {
@@ -72,6 +75,7 @@ export const Guess = () => {
     } else {
       if (guess === answer) {
         setWon(true);
+        saveScore("won");
         setGuessesLeft(guessesLeft - 1);
         setShowConfetti(true);
         setTimeout(() => {
@@ -81,6 +85,7 @@ export const Guess = () => {
         if (guessesLeft === 1) {
           setGuessesLeft(guessesLeft - 1);
           setFailed(true);
+          saveScore("failed");
           setShake(true);
           setTimeout(() => {
             setShake(false);
@@ -100,6 +105,12 @@ export const Guess = () => {
 
   useEffect(() => {
     fetchEntry();
+    const todaysScore = localStorage.getItem(todaysDate);
+    if (todaysScore === "won") {
+      setWon(true);
+    } else if (todaysScore === "failed") {
+      setFailed(true);
+    }
   }, []);
 
   return (
