@@ -26,6 +26,8 @@ export const Guess = () => {
   const [guessesLeft, setGuessesLeft] = useState(2);
   const [answer, setAnswer] = useState("");
 
+  const [streak, setStreak] = useState<string | null>("0");
+
   const [won, setWon] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -36,7 +38,6 @@ export const Guess = () => {
   const fullDate = new Date();
   const todaysDate = fullDate.toISOString().split("T")[0];
 
-  const streak = localStorage.getItem("streak");
   if (streak === null) {
     localStorage.setItem("streak", "0");
   }
@@ -117,6 +118,12 @@ export const Guess = () => {
       setWon(true);
     } else if (todaysScore === "failed") {
       setFailed(true);
+    }
+
+    if (localStorage.getItem("streak") !== null) {
+      setStreak(localStorage.getItem("streak"));
+    } else {
+      setStreak("0");
     }
   }, []);
 

@@ -4,25 +4,25 @@ import GTranslateIcon from "@mui/icons-material/GTranslate";
 import HomeIcon from "@mui/icons-material/Home";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const Navigation = () => {
   const fullDate = new Date();
   const today = fullDate.toISOString().split("T")[0];
-  let isCompleteToday = false;
-  if (localStorage.getItem(today) === "won") {
-    isCompleteToday = true;
-  } else {
-    isCompleteToday = false;
-  }
+  const [isCompleteToday, setIsCompleteToday] = useState(false);
+  const [Streak, setStreak] = useState<string | null>("");
 
-  const Streak = localStorage.getItem("streak");
+  useEffect(() => {
+    if (localStorage.getItem(today) === "won") {
+      setIsCompleteToday(true);
+    } else {
+      setIsCompleteToday(false);
+    }
+    setStreak(localStorage.getItem("streak"));
+  }, []);
   return (
     <div className="flex justify-between">
       <div className="group hidden md:flex">
-        <Button color="gray" disabled variant="ghost">
-          Home
-        </Button>
         <Button variant="ghost">Language guessing</Button>
       </div>
       <div className="group md:hidden">
