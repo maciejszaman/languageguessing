@@ -3,9 +3,11 @@ import {
   Button,
   Collapse,
   Divider,
+  Fade,
   Heading,
   Icon,
   Input,
+  Tag,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -25,7 +27,10 @@ export const Guess = () => {
   const [data, setData] = useState<Entry>();
   const [guessesLeft, setGuessesLeft] = useState(2);
   const [answer, setAnswer] = useState("");
-
+  const [firstWrongAnswer, setFirstWrongAnswer] = useState<string | null>(null);
+  const [secondWrongAnswer, setSecondWrongAnswer] = useState<string | null>(
+    null
+  );
   const [streak, setStreak] = useState<string | null>("0");
 
   const [won, setWon] = useState(false);
@@ -35,12 +40,20 @@ export const Guess = () => {
   const [shake, setShake] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [isClient, setIsClient] = useState(false);
+
   const fullDate = new Date();
   const todaysDate = fullDate.toISOString().split("T")[0];
 
-  if (streak === null) {
-    localStorage.setItem("streak", "0");
+  interface WindowSize {
+    width: number | undefined;
+    height: number | undefined;
   }
+
+  const [windowSize, setWindowSize] = useState<WindowSize>({
+    width: undefined,
+    height: undefined,
+  });
 
   const fetchEntry = async () => {
     const res = await axios.get("http://localhost:3000/api/dailyEntry");
@@ -101,6 +114,11 @@ export const Guess = () => {
         }
 
         setGuessesLeft(guessesLeft - 1);
+        if (firstWrongAnswer == null) {
+          setFirstWrongAnswer(guess);
+        } else {
+          setSecondWrongAnswer(guess);
+        }
         setShake(true);
         setTimeout(() => {
           setShake(false);
@@ -112,14 +130,27 @@ export const Guess = () => {
   };
 
   useEffect(() => {
+    setIsClient(true);
+    setWindowSize({
+      width: window.screen.width,
+      height: window.screen.height,
+    });
     fetchEntry();
+    if (streak === null) {
+      localStorage.setItem("streak", "0");
+    }
     const todaysScore = localStorage.getItem(todaysDate);
     if (todaysScore === "won") {
       setWon(true);
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000);
+      setGuessesLeft(0);
     } else if (todaysScore === "failed") {
       setFailed(true);
+      setGuessesLeft(0);
     }
-
     if (localStorage.getItem("streak") !== null) {
       setStreak(localStorage.getItem("streak"));
     } else {
@@ -132,12 +163,14 @@ export const Guess = () => {
       about="language guessing game"
       className="flex flex-col gap-8 p-4 max-w-md"
     >
-      <Confetti
-        width={innerWidth!}
-        height={innerHeight!}
-        numberOfPieces={showConfetti ? 250 : 0}
-        className="w-full"
-      />
+      {isClient ? (
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          numberOfPieces={showConfetti ? 250 : 0}
+          className="w-full"
+        />
+      ) : null}
       <div className="text">
         {data ? <Heading>{data.text}</Heading> : <Heading>Loading...</Heading>}
       </div>
@@ -207,6 +240,34 @@ export const Guess = () => {
             onKeyDown={handleKeyDown}
           />
           <Button onClick={() => submitGuess(inputValue)}>Guess</Button>
+        </div>
+        <div className="underinput mt-2 flex">
+          <div className="flex flex-col gap-2 w-fit">
+            <Fade in={firstWrongAnswer !== null}>
+              {firstWrongAnswer ? (
+                <Tag>
+                  <div className="flex gap-1 items-center">
+                    <CloseIcon boxSize={3} />
+                    {firstWrongAnswer}
+                  </div>
+                </Tag>
+              ) : (
+                <Tag></Tag>
+              )}
+            </Fade>
+            <Fade in={secondWrongAnswer !== null}>
+              {secondWrongAnswer ? (
+                <Tag>
+                  <div className="flex gap-1 items-center">
+                    <CloseIcon boxSize={3} />
+                    {secondWrongAnswer}
+                  </div>
+                </Tag>
+              ) : (
+                <Tag></Tag>
+              )}
+            </Fade>
+          </div>
         </div>
       </div>
       {data ? (
