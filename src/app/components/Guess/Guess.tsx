@@ -56,7 +56,7 @@ export const Guess = () => {
   });
 
   const fetchEntry = async () => {
-    const res = await axios.get("http://localhost:3000/api/dailyEntry");
+    const res = await axios.get("api/dailyEntry");
     const data = res.data.message;
     if (data) {
       setData(data[0]);
